@@ -170,13 +170,18 @@ describe Item, type: :model do
         @pump = @bike_shop.items.create(name: "Pump", description: "for filling flat tires", price: 25, image: "https://images-na.ssl-images-amazon.com/images/I/31BlVr01izL._SX425_.jpg", inventory: 95)
         @items = [@tire, @chain, @pump]
         @contents = Hash.new(0)
-        @contents[@tire.id] = 20
+        @contents[@tire.id] = 10
         @contents[@chain.id] = 34
         @contents[@pump.id] = 9
         @cart = Cart.new(@contents)
       end
       it "can check if any discounts can be applied to bulk item amount in cart" do
-        expect(@tire.any_discounts?(@contents[@tire.id])).to eq(@discount_1)
+        expect(@tire.any_discounts?(@contents[@tire.id])).to eq(@discount_2)
+        expect(@pump.any_discounts?(@contents[@pump.id])).to eq(nil)
+      end
+      it "can take the highest of the discount percentages if more than one discount applies" do
+        expect(@chain.any_discounts?(@contents[@chain.id])).to eq(@discount_1)
+        expect(@chain.any_discounts?(@contents[@chain.id])).to_not eq(@discount_2)
       end
     end
   end

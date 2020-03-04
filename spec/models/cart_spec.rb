@@ -12,9 +12,9 @@ RSpec.describe Cart do
     @pump = @bike_shop.items.create(name: "Pump", description: "for filling flat tires", price: 25, image: "https://images-na.ssl-images-amazon.com/images/I/31BlVr01izL._SX425_.jpg", inventory: 95)
     @items = [@tire, @chain, @pump]
     @contents = Hash.new(0)
-    @contents[@tire.id] = 20
-    @contents[@chain.id] = 34
-    @contents[@pump.id] = 9
+    @contents[@tire.id.to_s] = 20
+    @contents[@chain.id.to_s] = 34
+    @contents[@pump.id.to_s] = 9
     @cart = Cart.new(@contents)
   end
 
@@ -27,10 +27,16 @@ RSpec.describe Cart do
   end
 
   it '#item_discount' do
+    expect(@cart.item_discount(@pump)).to eq(0)
     expect(@cart.item_discount(@tire)).to eq(400)
   end
 
   it '#subtotal' do
+    expect(@cart.subtotal(@pump)).to eq(225)
     expect(@cart.subtotal(@tire)).to eq(1600)
+  end
+
+  it '#item_quantity' do
+    expect(@cart.item_quantity(@pump.id.to_s)).to eq(9)
   end
 end

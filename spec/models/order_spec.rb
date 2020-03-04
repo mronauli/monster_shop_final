@@ -18,7 +18,9 @@ describe Order, type: :model do
     before :each do
       @meg = Merchant.create(name: "Meg's Bike Shop", address: '123 Bike Rd.', city: 'Denver', state: 'CO', zip: 80203)
       @brian = Merchant.create(name: "Brian's Dog Shop", address: '125 Doggo St.', city: 'Denver', state: 'CO', zip: 80210)
-
+      @discount_1 = Discount.create(name: "Black Friday", percentage: 0.2, bulk: 20, merchant: @meg)
+      @discount_2 = Discount.create(name: "10% Off", percentage: 0.1, bulk: 10, merchant: @meg)
+      @discount_3 = Discount.create(name: "Winter Sale", percentage: 0.1, bulk: 10, merchant: @brian)
       @tire = @meg.items.create(name: "Gatorskins",
             description: "They'll never pop!",
             price: 100,
@@ -49,12 +51,23 @@ describe Order, type: :model do
         zip: 17033,
         status: 0)
 
+      @order_2 = @default_user_1.orders.create(
+        name: 'Meg',
+        address: '123 Stang Ave',
+        city: 'Hershey',
+        state: 'PA',
+        zip: 17033,
+        status: 0)
+
       @item_order_1 = @order_1.item_orders.create!(item: @tire, price: @tire.price, quantity: 2, fulfilled: true)
       @item_order_2 = @order_1.item_orders.create!(item: @pull_toy, price: @pull_toy.price, quantity: 3, fulfilled: false)
+      @item_order_3 = @order_2.item_orders.create!(item: @pull_toy, price: @pull_toy.price, quantity: 20, fulfilled: false)
+
     end
 
     it 'can calculate the grandtotal' do
       expect(@order_1.grandtotal).to eq(230)
+      expect(@order_2.grandtotal).to eq(180)
     end
 
     it "can count the total_quantity" do
@@ -110,6 +123,10 @@ describe Order, type: :model do
       merchant_id = @pull_toy.merchant_id
 
       expect(@order_1.merchant_items_on_order(merchant_id)).to eq([@item_order_2])
+    end
+
+    it "can get money saved if discount was applied" do
+      expect(@order_2.money_saved).to eq(20.0)
     end
   end
 end
