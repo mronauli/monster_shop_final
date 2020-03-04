@@ -7,8 +7,18 @@ class Order <ApplicationRecord
 
   enum status: %w(Packaged Pending Shipped Cancelled)
 
-  def grandtotal
+  def grandtotal_without_discount
     item_orders.sum('price * quantity')
+  end
+
+  def grandtotal
+    item_orders.sum do |item_order|
+      item_order.subtotal
+    end
+  end
+
+  def money_saved
+    grandtotal_without_discount - grandtotal if grandtotal_without_discount != grandtotal
   end
 
   def total_quantity

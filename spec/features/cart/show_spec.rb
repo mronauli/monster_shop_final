@@ -84,7 +84,6 @@ RSpec.describe 'Cart show' do
         click_on "Add To Cart"
 
         visit '/cart'
-
         within "#cart-item-#{@pencil.id}" do
           expect(page).to have_content("2")
           click_on ("+")
@@ -172,6 +171,40 @@ RSpec.describe 'Cart show' do
         end
 
         expect(page).not_to have_content(frog.name)
+      end
+
+      it "can see a discount is applied when bulk item amount meets discount bulk item" do
+        allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@default_user)
+
+        visit "/items/#{@pencil.id}"
+        click_on "Add To Cart"
+
+        visit '/cart'
+
+        within "#cart-item-#{@pencil.id}" do
+          expect(page).to have_content("2")
+          click_on ("+")
+          expect(page).to have_content("3")
+          21.times do
+            click_on ("+")
+          end
+          expect(current_path).to eq('/cart')
+          expect(page).to have_content("24")
+        end
+      end
+      it "sees a flash message that order qualifies for discount when enough items are incremented" do
+        allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@default_user)
+
+        visit "/items/#{@pencil.id}"
+        click_on "Add To Cart"
+
+        visit '/cart'
+        within "#cart-item-#{@pencil.id}" do
+          10.times do
+            click_on ("+")
+          end
+        end
+        expect(page).to have_text("Item qualifies for a bulk discount!")
       end
     end
   end

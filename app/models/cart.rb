@@ -23,10 +23,10 @@ class Cart
   end
 
   def subtotal(item)
-    if item_discount(item).zero?
+    if item_discount(item).nil?
       item.price * @contents[item.id.to_s]
     else
-      item.price * @contents[item.id] - item_discount(item)
+      item.price * @contents[item.id.to_s] - item_discount(item)
     end
   end
 
@@ -57,7 +57,7 @@ class Cart
   end
 
   def item_discount(item)
-    quantity = @contents[item.id]
+    quantity = @contents[item.id.to_s]
     eligible_discount = item.any_discounts?(quantity)
     if eligible_discount.nil?
       0

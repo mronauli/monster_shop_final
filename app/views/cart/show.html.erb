@@ -42,7 +42,7 @@
     </tr>
   <% end %>
 </table>
-  <% if !cart.total_discount.zero? %>
+  <% if cart.total_discount == 0 %>
     <p>Total: <%= number_to_currency(cart.total) %></p>
   <% else %>
     <p>Total: <%= number_to_currency(cart.checkout) %></p>

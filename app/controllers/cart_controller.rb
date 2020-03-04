@@ -28,7 +28,7 @@ before_action :no_admin
       cart.subtract_quantity(params[:item_id])
       return remove_item if cart.quantity_zero?(params[:item_id])
     end
-    flash.now[:success] = "Item qualifies for a bulk discount!" if item_qualifies_for_discount?
+    flash[:success] = "Item qualifies for a bulk discount!" if item_qualifies_for_discount?
     redirect_to '/cart'
   end
 
