@@ -48,4 +48,8 @@ class Item <ApplicationRecord
   def set_defaults
     self.image = 'https://cdn.mos.cms.futurecdn.net/rqoDpnCCrdpGFHM6qky3rS-1200-80.jpg' if self.image == "" || nil
   end
+
+  def any_discounts?(quantity)
+    Discount.where(merchant_id: merchant_id).where('discounts.bulk <= ?', quantity).order('percentage DESC').first
+  end
 end
