@@ -59,6 +59,10 @@ admin_user = User.create({
   role: 2
   })
 
+  discount_1 = Discount.create(name: "Black Friday", percentage: 0.2, bulk: 20, merchant: bike_shop)
+  discount_2 = Discount.create(name: "10% Off", percentage: 0.1, bulk: 10, merchant: bike_shop)
+  discount_3 = Discount.create(name: "Winter Sale", percentage: 0.25, bulk: 50, merchant: dog_shop)
+  discount_4 = Discount.create(name: "Better than BOGO", percentage: 0.13, bulk: 13, merchant: dog_shop)
 
   #bike_shop items
   tire = bike_shop.items.create(name: "Gatorskins", description: "They'll never pop!", price: 100, image: "https://www.rei.com/media/4e1f5b05-27ef-4267-bb9a-14e35935f218?size=784x588", inventory: 12)

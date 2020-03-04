@@ -194,6 +194,13 @@ RSpec.describe "on a merchant dashboard show page" do
       expect(current_path).to eq("/merchant/items")
     end
 
+    it "can click a link to see its discounts" do
+      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@merchant_user)
+      visit "/merchant"
+      click_link "My Discounts"
+      expect(current_path).to eq("/merchant/discounts")
+    end
+
     context "as an admin user" do
       it "I can see everything a merchant would see" do
         allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@admin_user)
@@ -219,10 +226,3 @@ RSpec.describe "on a merchant dashboard show page" do
     end
   end
 end
-# User Story 37, Admin can see a merchant's dashboard
-#
-# As an admin user
-# When I visit the merchant index page ("/merchants")
-# And I click on a merchant's name,
-# Then my URI route should be ("/admin/merchants/6")
-# Then I see everything that merchant would see
