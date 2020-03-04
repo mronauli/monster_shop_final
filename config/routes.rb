@@ -55,6 +55,8 @@ Rails.application.routes.draw do
     get '/', to: 'dashboard#show'
     post '/items/:item_id', to: 'items#activate_deactivate_item'
     patch '/orders/:order_id/item_order/:item_order_id', to: "orders#fulfill"
+    resources :discounts do
+    end
     resources :items do
     end
     resources :orders, only: [:show] do
