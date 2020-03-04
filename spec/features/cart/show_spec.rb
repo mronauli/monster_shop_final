@@ -4,11 +4,24 @@ RSpec.describe 'Cart show' do
   describe 'When I have added items to my cart' do
     describe 'and visit my cart path' do
       before(:each) do
+        @default_user = User.create({
+          name: "Paul D",
+          address: "123 Main St.",
+          city: "Broomfield",
+          state: "CO",
+          zip: "80020",
+          email: "pauld@gmail.com",
+          password: "supersecure1",
+          role: 0
+          })
         @mike = Merchant.create(name: "Mike's Print Shop", address: '123 Paper Rd.', city: 'Denver', state: 'CO', zip: 80203)
         @meg = Merchant.create(name: "Meg's Bike Shop", address: '123 Bike Rd.', city: 'Denver', state: 'CO', zip: 80203)
-
-        @tire = @meg.items.create(name: "Gatorskins", description: "They'll never pop!", price: 100, image: "https://www.rei.com/media/4e1f5b05-27ef-4267-bb9a-14e35935f218?size=784x588", inventory: 12)
-        @paper = @mike.items.create(name: "Lined Paper", description: "Great for writing on!", price: 20, image: "https://cdn.vertex42.com/WordTemplates/images/printable-lined-paper-wide-ruled.png", inventory: 25)
+        @discount_1 = Discount.create(name: "Black Friday", percentage: 0.2, bulk: 20, merchant: @mike)
+        @discount_2 = Discount.create(name: "10% Off", percentage: 0.1, bulk: 10, merchant: @mike)
+        @discount_3 = Discount.create(name: "Winter Sale", percentage: 0.25, bulk: 50, merchant: @meg)
+        @discount_4 = Discount.create(name: "Better than BOGO", percentage: 0.50, bulk: 100, merchant: @meg)
+        @tire = @meg.items.create(name: "Gatorskins", description: "They'll never pop!", price: 100, image: "https://www.rei.com/media/4e1f5b05-27ef-4267-bb9a-14e35935f218?size=784x588", inventory: 55)
+        @paper = @mike.items.create(name: "Lined Paper", description: "Great for writing on!", price: 20, image: "https://cdn.vertex42.com/WordTemplates/images/printable-lined-paper-wide-ruled.png", inventory: 70)
         @pencil = @mike.items.create(name: "Yellow Pencil", description: "You can write on paper with it!", price: 2, image: "https://images-na.ssl-images-amazon.com/images/I/31BlVr01izL._SX425_.jpg", inventory: 100)
         visit "/items/#{@paper.id}"
         click_on "Add To Cart"
@@ -56,7 +69,6 @@ RSpec.describe 'Cart show' do
         click_on "Add To Cart"
 
         visit '/cart'
-
         within "#cart-item-#{@pencil.id}" do
           expect(page).to have_content("2")
           expect(page).to have_content("$4")
@@ -66,6 +78,7 @@ RSpec.describe 'Cart show' do
       end
 
       it "allows me to increment the items in my cart" do
+        allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@default_user)
 
         visit "/items/#{@pencil.id}"
         click_on "Add To Cart"
@@ -76,8 +89,21 @@ RSpec.describe 'Cart show' do
           expect(page).to have_content("2")
           click_on ("+")
           expect(page).to have_content("3")
+          21.times do
+            click_on ("+")
+          end
+          expect(current_path).to eq('/cart')
+          expect(page).to have_content("24")
+
+          end
+          click_link "Checkout"
+          fill_in :name, with: @default_user[:name]
+          fill_in :address, with: @default_user[:address]
+          fill_in :city, with: @default_user[:city]
+          fill_in :state, with: @default_user[:state]
+          fill_in :zip, with: @default_user[:zip]
+          click_button "Create Order"
         end
-      end
 
       it "doesn't allow me to increment the items in my cart past inventory limit" do
         tire = @meg.items.create(
