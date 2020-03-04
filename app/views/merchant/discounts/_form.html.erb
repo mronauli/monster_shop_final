@@ -1,0 +1,13 @@
+<%= form_with model: [:merchant, @discount], local: true do |form| %>
+  <%= form.label :name %>
+  <%= form.text_field :name %>
+
+  <%= form.label :percentage %>
+  <%= form.text_field :percentage %>
+
+  <%= form.label :bulk %>
+  <%= form.text_field :bulk %>
+
+  <%= form.submit @discount.persisted? ? 'Submit Changes' : 'Submit Discount'  %>
+
+<% end %>
