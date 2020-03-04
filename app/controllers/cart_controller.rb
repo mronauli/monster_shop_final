@@ -8,7 +8,7 @@ before_action :no_admin
   end
 
   def show
-    @items = cart.items
+    @items = cart.items_and_quantities
   end
 
   def empty
@@ -28,10 +28,17 @@ before_action :no_admin
       cart.subtract_quantity(params[:item_id])
       return remove_item if cart.quantity_zero?(params[:item_id])
     end
-    redirect_to "/cart"
+    flash.now[:success] = "Item qualifies for a bulk discount!" if item_qualifies_for_discount?
+    redirect_to '/cart'
   end
 
   def no_admin
     render file: "/public/404" if !current_user.nil? && current_user.admin_user?
+  end
+
+  private
+  def item_qualifies_for_discount?
+    item = Item.find(params[:item_id])
+    item.any_discounts?(cart.item_quantity(params[:item_id]))
   end
 end
