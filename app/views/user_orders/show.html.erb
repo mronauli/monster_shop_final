@@ -17,6 +17,9 @@
   <p>Number of items in order: <%= item_order.quantity %></p>
   <p>Item Price: $<%= item_order.price %></p>
   <p>Subtotal: $<%= item_order.subtotal %></p>
+  <% if !item_order.item_order_discount.nil? %>
+    <p>You saved $<%= item_order.order.money_saved.round(2) %> on this order!</p>
+  <% end %>
   </section>
 <% end %>
 <p>Total Items in Order: <%= @order.total_quantity %></p>

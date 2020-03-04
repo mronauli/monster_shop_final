@@ -5,6 +5,14 @@ class ItemOrder <ApplicationRecord
   belongs_to :order
 
   def subtotal
-    price * quantity
+    if item.any_discounts?(self.quantity).nil?
+      price * quantity
+    else
+      price * quantity - price * quantity * item.any_discounts?(self.quantity).percentage
+    end
+  end
+
+  def item_order_discount
+    item.any_discounts?(self.quantity)
   end
 end

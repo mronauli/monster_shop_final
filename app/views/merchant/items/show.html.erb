@@ -10,7 +10,7 @@
     </section>
     <section style="text-align:left" class = "item-show-item">
       <p><%= @item.description %></p>
-      <p>Price: <%= number_to_currency(@item.price )%> </p>
+      <p>Price: <%= number_to_currency(@item.price)%> </p>
       <p>Inventory: <%= @item.inventory %> </p>
       <% if @item.active? %>
         <p style= "color:green">Active</p>
