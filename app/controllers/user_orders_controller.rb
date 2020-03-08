@@ -7,11 +7,11 @@ class UserOrdersController < ApplicationController
   end
 
   def show
-    @order = Order.find(params[:order_id])
+    @order = Order.find(params[:id])
   end
 
   def destroy
-    order = Order.find(params[:order_id])
+    order = Order.find(params[:id])
     order.cancel
     flash[:notice] = "Your Order has been Cancelled. :("
     redirect_to '/profile'

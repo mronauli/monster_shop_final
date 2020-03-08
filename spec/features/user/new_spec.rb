@@ -9,7 +9,7 @@ RSpec.describe "New User Form" do
         click_link "Register"
       end
 
-    expect(current_path).to eq('/register')
+    expect(current_path).to eq('/register/new')
 
     new_user = ({name: "Paul D",
               address: "123 Main St.",
@@ -35,7 +35,7 @@ RSpec.describe "New User Form" do
     end
 
     it "shows message when form is not filled out properly" do
-      visit '/register'
+      visit '/register/new'
 
       new_user = ({name: "Paul D",
                 address: "123 Main St.",
@@ -69,7 +69,7 @@ RSpec.describe "New User Form" do
                 email: "pauld@gmail.com",
                 password: "supersecure1"})
 
-      visit '/register'
+      visit '/register/new'
 
       new_user = ({name: "Paul D",
                 address: "123 Main St.",

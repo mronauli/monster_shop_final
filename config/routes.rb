@@ -3,26 +3,19 @@ Rails.application.routes.draw do
 
   root "welcome#index"
 
-  get "/merchants", to: "merchants#index"
-  get "/merchants/new", to: "merchants#new"
-  get "/merchants/:id", to: "merchants#show"
-  post "/merchants", to: "merchants#create"
-  get "/merchants/:id/edit", to: "merchants#edit"
-  patch "/merchants/:id", to: "merchants#update"
-  delete "/merchants/:id", to: "merchants#destroy"
+  resources :merchants
 
-  get "/items", to: "items#index"
-  get "/items/:id", to: "items#show"
-  get "/items/:id/edit", to: "items#edit"
-  patch "/items/:id", to: "items#update"
-  get "/merchants/:merchant_id/items", to: "items#index"
+  resources :items, only: [:index, :show, :edit, :update]
 
-  get "/items/:item_id/reviews/new", to: "reviews#new"
-  post "/items/:item_id/reviews", to: "reviews#create"
+  resources :merchants, only: [] do
+    resources :items, only: [:index], :controller => "items"
+  end
 
-  get "/reviews/:id/edit", to: "reviews#edit"
-  patch "/reviews/:id", to: "reviews#update"
-  delete "/reviews/:id", to: "reviews#destroy"
+  resources :items, only: [] do
+    resources :reviews, only: [:new, :create], :controller => "reviews"
+  end
+
+  resources :reviews, only: [:edit, :update, :destroy]
 
   post "/cart/:item_id", to: "cart#add_item"
   get "/cart", to: "cart#show"
@@ -30,46 +23,54 @@ Rails.application.routes.draw do
   delete "/cart", to: "cart#empty"
   delete "/cart/:item_id", to: "cart#remove_item"
 
-  get "/orders/new", to: "orders#new"
-  post "/orders", to: "orders#create"
-  get "/orders/:id", to: "orders#show"
+  resources :orders, only: [:new, :create, :show]
 
-  get '/register', to: 'users#new'
-  post '/register', to: 'users#create'
-  get '/profile/edit', to: 'users#edit'
-  patch '/profile', to: 'users#update'
-  get '/profile', to: 'users#show'
+  resources :users, only: [:new, :create], path: "register"
+  resource :profile, only: [:edit, :update, :show], :controller => "users"
 
-  get '/password/edit', to: 'password#edit'
-  patch '/password', to: 'password#update'
+  resource :password, only: [:edit, :update], :controller => "password"
 
-  get '/login', to: 'sessions#new'
-  post '/login', to: 'sessions#create'
-  delete '/logout', to: 'sessions#destroy'
-
-  get '/profile/orders', to: 'user_orders#index'
-  get '/profile/orders/:order_id', to: 'user_orders#show'
-  delete '/profile/orders/:order_id', to: 'user_orders#destroy'
-
-  namespace :merchant do
-    get '/', to: 'dashboard#show'
-    post '/items/:item_id', to: 'items#activate_deactivate_item'
-    patch '/orders/:order_id/item_order/:item_order_id', to: "orders#fulfill"
-    resources :discounts do
-    end
-    resources :items do
-    end
-    resources :orders, only: [:show] do
-    end
+  controller :sessions do
+   get 'login' => :new
+   post 'login' => :create
+   delete 'logout' => :destroy
   end
 
-  namespace :admin do
-    get '/', to: 'dashboard#index'
-    get '/users', to: 'users#index'
-    get '/users/:id', to: 'users#show'
-    patch '/orders/:order_id', to: 'dashboard#update'
-    get '/merchants/:merchant_id', to: 'merchants#show'
-    get '/merchants', to: 'merchants#index'
-    patch '/merchants/:merchant_id', to: 'merchants#enable_disable_merchant'
+  scope '/profile' do
+    resources :orders, only: [:index, :show, :destroy], :controller => 'user_orders'
   end
+
+  get "/merchant", to: "merchant/dashboard#show"
+
+  post "merchant/items/:item_id", to: "merchant/items#activate_deactivate_item"
+
+  patch "merchant/orders/:order_id/item_order/:item_order_id", to: "merchant/orders#fulfill"
+
+  get "/merchant/discounts", to: "merchant/discounts#index", as: "merchant_discounts"
+  post "/merchant/discounts", to: "merchant/discounts#create"
+  get "/merchant/discounts/new", to: "merchant/discounts#new", as: "new_merchant_discount"
+  get "/merchant/discounts/:id/edit", to: "merchant/discounts#edit", as: "edit_merchant_discount"
+  get "/merchant/discounts/:id", to: "merchant/discounts#show", as: "merchant_discount"
+  patch "/merchant/discounts/:id", to: "merchant/discounts#update"
+  delete "/merchant/discounts/:id", to: "merchant/discounts#destroy"
+
+  get "/merchant/items", to: "merchant/items#index"
+  post "/merchant/items", to: "merchant/items#create"
+  get "/merchant/items/new", to: "merchant/items#new", as: "new_merchant_item"
+  get "/merchant/items/:id/edit", to: "merchant/items#edit", as: "edit_merchant_item"
+  get "/merchant/items/:id", to: "merchant/items#show", as: "merchant_item"
+  patch "/merchant/items/:id", to: "merchant/items#update"
+  delete "/merchant/items/:id", to: "merchant/items#destroy"
+
+  get "/merchant/orders/:id", to: "merchant/orders#show"
+
+  get "/admin", to: "admin/dashboard#index"
+  patch "/admin/orders/:order_id", to: "admin/dashboard#update"
+
+  get "/admin/users", to: "admin/users#index"
+  get "/admin/users/:id", to: "admin/users#show"
+
+  get "/admin/merchants/:merchant_id", to: "admin/merchants#show"
+  get "/admin/merchants", to: "admin/merchants#index"
+  patch "/admin/merchants/:merchant_id", to: "admin/merchants#enable_disable_merchant"
 end
